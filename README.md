@@ -6,3 +6,8 @@ Stackable interceptors for PrintStream with copy, redirect, filter and passthrou
 [![Coverage Status](https://coveralls.io/repos/github/kemitix/wrapper/badge.svg?branch=master)](https://coveralls.io/github/kemitix/wrapper?branch=master)
 [![codecov](https://codecov.io/gh/kemitix/wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/kemitix/wrapper)
 
+## Notes
+
+* Implementations of `Wrapper` do not need to implement the basic `Wrapper` methods. They only need to now implement the `WrapperState<T> getWrapperState()` method.
+* Implementations of `Wrapper<T>` must  `extend` or `implement` the Wrapper's Generic type `T`.
+* Implementations of `Wrapper<T>` must not override the default methods implemented in `Wrapper`.
