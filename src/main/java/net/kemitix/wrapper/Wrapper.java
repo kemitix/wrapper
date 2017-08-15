@@ -21,10 +21,16 @@
 
 package net.kemitix.wrapper;
 
+import lombok.NonNull;
+
 import java.util.Optional;
 
 /**
  * Wrapper for Generic types.
+ *
+ * <p>N.B. all classes that implement this interface <strong>must</strong> also extend or implement {@code T}.</p>
+ *
+ * <p>N.B. all classes that implement this interface <strong>must not</strong> override the default methods.</p>
  *
  * @param <T> the type of object to wrap
  *
@@ -33,18 +39,29 @@ import java.util.Optional;
 public interface Wrapper<T> {
 
     /**
+     * Gets the Wrapper's state object.
+     *
+     * @return the WrapperState
+     */
+    WrapperState<T> getWrapperState();
+
+    /**
      * Fetch the core item being Wrapper.
      *
      * @return the core item
      */
-    T getCore();
+    default T getWrapperCore() {
+        return getWrapperState().getWrapperCore();
+    }
 
     /**
      * Gets the inner wrapper if one is present.
      *
      * @return An Optional containing the inner wrapper if present, otherwise is empty
      */
-    Optional<Wrapper<T>> findInnerWrapper();
+    default Optional<Wrapper<T>> findInnerWrapper() {
+        return getWrapperState().findInnerWrapper();
+    }
 
     /**
      * Remove the wrapper from the chain of wrappers.
@@ -53,12 +70,23 @@ public interface Wrapper<T> {
      *
      * @param wrapper the wrapper to remove
      */
-    void remove(Wrapper<T> wrapper);
+    default void removeWrapper(@NonNull Wrapper<T> wrapper) {
+        getWrapperState().removeWrapper(wrapper);
+    }
 
     /**
      * Provides the core item's own interface.
      *
      * @return the core item as a T object
      */
-    T asCore();
+    @SuppressWarnings("unchecked")
+    default T asCore() {
+        return (T) this;
+    }
+
+    default T getWrapperDelegate() {
+        return getWrapperState().findInnerWrapper()
+                                .map(Wrapper::asCore)
+                                .orElseGet(this::getWrapperCore);
+    }
 }
