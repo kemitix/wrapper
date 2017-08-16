@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+0.2.0
+-----
+
+* WrapperState holds state for Wrapper implementations
+* Wrapper: `getWrapperState()`: added
+* Wrapper: `getWrapperDelegate()`: added
+* Wrapper: `getCore()` => `getWrapperCore()`
+* Wrapper: `remove()` => `removeWrapper()`
+
 0.1.0
 -----
 
