@@ -71,13 +71,18 @@ public class WrapperState<T> implements Wrapper<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final void removeWrapper(final Wrapper<T> wrapper) {
-        if (innerWrapper.compareAndSet(wrapper, null)) {
-            wrapper.findInnerWrapper()
-                   .ifPresent(innerWrapper::set);
-            return;
+    public final T removeWrapper(final Wrapper<T> wrapper) {
+        if (wrapper == this) {
+            return wrapper.getWrapperDelegate();
         }
-        Optional.ofNullable(innerWrapper.get())
-                .ifPresent(wrapped -> wrapped.removeWrapper(wrapper));
+        findInnerWrapper().ifPresent(inner -> {
+            final T newDelegate = inner.removeWrapper(wrapper);
+            if (newDelegate instanceof Wrapper) {
+                innerWrapper.set((Wrapper<T>) newDelegate);
+            } else {
+                innerWrapper.set(null);
+            }
+        });
+        return (T) this;
     }
 }

@@ -66,12 +66,13 @@ public interface Wrapper<T> {
     /**
      * Remove the wrapper from the chain of wrappers.
      *
-     * <p>Can't be <em>this</em> wrapper.</p>
-     *
      * @param wrapper the wrapper to remove
+     *
+     * @return {@code this} Wrapper if {@code wrapper} is not {@code this}, otherwise the Wrapper Delegate, which may be
+     * the Wrapper Core
      */
-    default void removeWrapper(@NonNull Wrapper<T> wrapper) {
-        getWrapperState().removeWrapper(wrapper);
+    default T removeWrapper(@NonNull Wrapper<T> wrapper) {
+        return getWrapperState().removeWrapper(wrapper);
     }
 
     /**

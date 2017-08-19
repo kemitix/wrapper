@@ -51,18 +51,7 @@ public class WrapperTest {
     }
 
     @Test
-    public void canRemoveWrapperFromState() {
-        //given
-        final WrapperState<Object> innerWrapper = new WrapperState<>(o);
-        wrapperState = new WrapperState<>(innerWrapper);
-        //when
-        objectWrapper.removeWrapper(innerWrapper);
-        //then
-        assertThat(objectWrapper.getWrapperDelegate()).isSameAs(o);
-    }
-
-    @Test
-    public void requireAWrapperToBeRemoved() {
+    public void removeWrapperRequiresAWrapper() {
         assertThatNullPointerException().isThrownBy(() -> objectWrapper.removeWrapper(null))
                                         .withMessage("wrapper");
     }

@@ -1,5 +1,6 @@
 package net.kemitix.wrapper;
 
+import lombok.val;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,45 +35,79 @@ public class WrapperStateTest {
     }
 
     @Test
-    public void whenOneInnerWrapperCanRemoveIt() {
+    public void whenSingleWrapperCanRemoveItself() {
         //given
-        final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
+        val o = new Object();
+        val wrapper = new WrapperState<>(o);
         //when
-        second.removeWrapper(first);
+        val result = wrapper.removeWrapper(wrapper);
         //then
-        assertThat(second.getWrapperDelegate()).isSameAs(o);
+        assertThat(result).isSameAs(o);
+    }
+
+    @Test
+    public void whenWrapperToRemoveIsInvalidThenIgnoreAndReturnSelf() {
+        //given
+        val o = new Object();
+        val wrapper = new WrapperState<>(o);
+        //when
+        val result = ((Wrapper<Object>) wrapper.removeWrapper(new WrapperState<>(o)));
+        //then
+        assertThat(result).isSameAs(wrapper);
+        assertThat(result.getWrapperDelegate()).isSameAs(o);
+    }
+
+    @Test
+    public void whenTwoWrappersCanRemoveInner() {
+        //given
+        val o = new Object();
+        val inner = new WrapperState<Object>(o);
+        val outer = new WrapperState<Object>(inner);
+        //when
+        val result = ((Wrapper<Object>) outer.removeWrapper(inner));
+        //then
+        assertThat(result).isSameAs(outer);
+        assertThat(result.getWrapperDelegate()).isSameAs(o);
     }
 
     @Test
     public void whenTwoInnerWrappersCanRemoveFirst() {
         //given
-        final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
-        final WrapperState<Object> third = new WrapperState<>(second);
+        val o = new Object();
+        val inner = new WrapperState<Object>(o);
+        val middle = new WrapperState<Object>(inner);
+        val outer = new WrapperState<Object>(middle);
         //when
-        third.removeWrapper(first);
+        val result = (Wrapper<Object>) outer.removeWrapper(inner);
         //then
-        assertThat(second.getWrapperDelegate()).isSameAs(o);// second now wraps o directly
-        assertThat(third.getWrapperDelegate()).isSameAs(second);// no change
+        assertThat(result).isSameAs(outer);
+        assertThat(outer.getWrapperDelegate()).isSameAs(middle);
+        assertThat(middle.getWrapperDelegate()).isSameAs(o);
     }
 
     @Test
     public void whenTwoInnerWrappersCanRemoveSecond() {
         //given
         final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
-        final WrapperState<Object> third = new WrapperState<>(second);
-        assertThat(first.getWrapperDelegate()).isSameAs(o);
-        assertThat(second.getWrapperDelegate()).isSameAs(first);
-        assertThat(third.getWrapperDelegate()).isSameAs(second);
+        val inner = new WrapperState<Object>(o);
+        val middle = new WrapperState<Object>(inner);
+        val outer = new WrapperState<Object>(middle);
         //when
-        third.removeWrapper(second);
+        val result = (Wrapper<Object>) outer.removeWrapper(middle);
         //then
-        assertThat(first.getWrapperDelegate()).isSameAs(o);// no change
-        assertThat(third.getWrapperDelegate()).isSameAs(first);// third now wraps first
+        assertThat(result).isSameAs(outer);
+        assertThat(result.getWrapperDelegate()).isSameAs(inner);
+        assertThat(inner.getWrapperDelegate()).isSameAs(o);
+    }
+
+    @Test
+    public void canRemoveOnlyWrapper() {
+        //given
+        val o = new Object();
+        val wrapper = new WrapperState<Object>(o);
+        //when
+        val result = wrapper.removeWrapper(wrapper);
+        //then
+        assertThat(result).isSameAs(o);
     }
 }
