@@ -71,8 +71,13 @@ public interface Wrapper<T> {
      * @return {@code this} Wrapper if {@code wrapper} is not {@code this}, otherwise the Wrapper Delegate, which may be
      * the Wrapper Core
      */
+    @SuppressWarnings("unchecked")
     default T removeWrapper(@NonNull Wrapper<T> wrapper) {
-        return getWrapperState().removeWrapper(wrapper);
+        if (wrapper == this) {
+            return getWrapperDelegate();
+        }
+        return Optional.ofNullable(getWrapperState().removeWrapper(wrapper))
+                       .orElse((T) this);
     }
 
     /**

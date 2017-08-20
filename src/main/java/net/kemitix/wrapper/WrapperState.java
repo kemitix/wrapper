@@ -69,12 +69,17 @@ public class WrapperState<T> implements Wrapper<T> {
         return Optional.ofNullable(innerWrapper.get());
     }
 
+    /**
+     * This implementation, used only by {@link Wrapper}, returns a {@code null} if there is no change in the outermost
+     * wrapper.
+     *
+     * @param wrapper the wrapper to remove
+     *
+     * @return the new outermost wrapper, or null
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final T removeWrapper(final Wrapper<T> wrapper) {
-        if (wrapper == this) {
-            return wrapper.getWrapperDelegate();
-        }
         findInnerWrapper().ifPresent(inner -> {
             final T newDelegate = inner.removeWrapper(wrapper);
             if (newDelegate instanceof Wrapper) {
@@ -83,6 +88,6 @@ public class WrapperState<T> implements Wrapper<T> {
                 innerWrapper.set(null);
             }
         });
-        return (T) this;
+        return null;
     }
 }

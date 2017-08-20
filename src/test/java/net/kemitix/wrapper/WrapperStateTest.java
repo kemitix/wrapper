@@ -13,11 +13,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WrapperStateTest {
 
     @Test
-    public void canCreateStateForAnObject() {
+    public void canCreateWrapperStateForObject() {
         //given
-        final Object o = new Object();
+        val o = createSubject();
         //when
-        final WrapperState<Object> wrapperState = new WrapperState<>(o);
+        val wrapperState = createWrapperState(o);
         //then
         assertThat(wrapperState.getWrapperCore()).isSameAs(o);
         assertThat(wrapperState.getWrapperDelegate()).isSameAs(o);
@@ -26,88 +26,27 @@ public class WrapperStateTest {
     @Test
     public void canCreateStateForWrappedObject() {
         //given
-        final Object o = new Object();
-        final WrapperState<Object> existingWrapperState = new WrapperState<>(o);
+        val o = createSubject();
+        val inner = createWrapperState(o);
         //when
-        final WrapperState<Object> wrapperState = new WrapperState<>(existingWrapperState);
+        val wrapperState = createWrapperState(inner);
         //then
-        assertThat(wrapperState.getWrapperDelegate()).isSameAs(existingWrapperState);
+        assertThat(wrapperState.getWrapperDelegate()).isSameAs(inner);
     }
 
-    @Test
-    public void whenSingleWrapperCanRemoveItself() {
-        //given
-        val o = new Object();
-        val wrapper = new WrapperState<>(o);
-        //when
-        val result = wrapper.removeWrapper(wrapper);
-        //then
-        assertThat(result).isSameAs(o);
+    private WrapperState<Subject> createWrapperState(final Subject o) {
+        return new WrapperState<>(o);
     }
 
-    @Test
-    public void whenWrapperToRemoveIsInvalidThenIgnoreAndReturnSelf() {
-        //given
-        val o = new Object();
-        val wrapper = new WrapperState<>(o);
-        //when
-        val result = ((Wrapper<Object>) wrapper.removeWrapper(new WrapperState<>(o)));
-        //then
-        assertThat(result).isSameAs(wrapper);
-        assertThat(result.getWrapperDelegate()).isSameAs(o);
+    private WrapperState<Subject> createWrapperState(final WrapperState<Subject> inner) {
+        return new WrapperState<>(inner);
     }
 
-    @Test
-    public void whenTwoWrappersCanRemoveInner() {
-        //given
-        val o = new Object();
-        val inner = new WrapperState<Object>(o);
-        val outer = new WrapperState<Object>(inner);
-        //when
-        val result = ((Wrapper<Object>) outer.removeWrapper(inner));
-        //then
-        assertThat(result).isSameAs(outer);
-        assertThat(result.getWrapperDelegate()).isSameAs(o);
+    private Subject createSubject() {
+        return new Subject();
     }
 
-    @Test
-    public void whenTwoInnerWrappersCanRemoveFirst() {
-        //given
-        val o = new Object();
-        val inner = new WrapperState<Object>(o);
-        val middle = new WrapperState<Object>(inner);
-        val outer = new WrapperState<Object>(middle);
-        //when
-        val result = (Wrapper<Object>) outer.removeWrapper(inner);
-        //then
-        assertThat(result).isSameAs(outer);
-        assertThat(outer.getWrapperDelegate()).isSameAs(middle);
-        assertThat(middle.getWrapperDelegate()).isSameAs(o);
-    }
+    private class Subject {
 
-    @Test
-    public void whenTwoInnerWrappersCanRemoveSecond() {
-        //given
-        final Object o = new Object();
-        val inner = new WrapperState<Object>(o);
-        val middle = new WrapperState<Object>(inner);
-        val outer = new WrapperState<Object>(middle);
-        //when
-        val result = (Wrapper<Object>) outer.removeWrapper(middle);
-        //then
-        assertThat(result).isSameAs(outer);
-        assertThat(result.getWrapperDelegate()).isSameAs(inner);
-        assertThat(inner.getWrapperDelegate()).isSameAs(o);
-    }
-
-    @Test
-    public void canRemoveOnlyWrapper() {
-        //given
-        val o = new Object();
-        val wrapper = new WrapperState<Object>(o);
-        //when
-        val result = wrapper.removeWrapper(wrapper);
-        //then
-        assertThat(result).isSameAs(o);
     }
 }
