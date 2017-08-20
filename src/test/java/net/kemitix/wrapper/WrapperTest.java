@@ -133,6 +133,34 @@ public class WrapperTest {
         assertThat(result).isSameAs(subject);
     }
 
+    @Test
+    public void whenItemIsReallyAWrapperThenCanGetItAsAWrapper() {
+        //given
+        val subject = createSubject();
+        val wrapper = createWrapper(subject);
+        val asSubject = (Subject) wrapper;
+        //when
+        val asWrapper = Wrapper.asWrapper(asSubject);
+        //then
+        assertThat(asWrapper).contains(wrapper);
+    }
+
+    @Test
+    public void whenItemIsNotReallyAWrapperThenDoNotGetItAsAWrapper() {
+        //given
+        val subject = createSubject();
+        //when
+        val asWrapper = Wrapper.asWrapper(subject);
+        //then
+        assertThat(asWrapper).isEmpty();
+    }
+
+    @Test
+    public void whenItemIsNullThenAsWrapperThrowsException() {
+        assertThatNullPointerException().isThrownBy(() -> Wrapper.asWrapper(null))
+                                        .withMessage("item");
+    }
+
     @SuppressWarnings("unchecked")
     private Wrapper<Subject> verifyIsAWrapper(final Subject subject) {
         assertThat(subject).isInstanceOf(Wrapper.class);

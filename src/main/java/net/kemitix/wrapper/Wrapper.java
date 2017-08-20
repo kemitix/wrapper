@@ -95,4 +95,20 @@ public interface Wrapper<T> {
                                 .map(Wrapper::asCore)
                                 .orElseGet(this::getWrapperCore);
     }
+
+    /**
+     * Checks if the item is a Wrapper, and returns it as one, inside an Optional, if it is, otherwise it returns empty.
+     *
+     * @param item The item to check
+     * @param <T>  The type of the item
+     *
+     * @return an Optional containing either the item as a Wrapper, or empty is item isn't a Wrapper
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Optional<Wrapper<T>> asWrapper(@NonNull T item) {
+        if (item instanceof Wrapper) {
+            return Optional.of((Wrapper<T>) item);
+        }
+        return Optional.empty();
+    }
 }
