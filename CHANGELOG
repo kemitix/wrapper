@@ -1,14 +1,20 @@
 CHANGELOG
 =========
 
+0.3.0
+-----
+
+* `Wrapper.removeWrapper()`: now returns either a `Wrapper` or the core object
+* `Wrapper.asWrapper()`: added
+
 0.2.0
 -----
 
-* WrapperState holds state for Wrapper implementations
-* Wrapper: `getWrapperState()`: added
-* Wrapper: `getWrapperDelegate()`: added
-* Wrapper: `getCore()` => `getWrapperCore()`
-* Wrapper: `remove()` => `removeWrapper()`
+* `WrapperState` holds state for `Wrapper` implementations
+* `Wrapper.getWrapperState()`: added
+* `Wrapper.getWrapperDelegate()`: added
+* `Wrapper.getCore()` => `getWrapperCore()`
+* `Wrapper.remove()` => `removeWrapper()`
 
 0.1.0
 -----
