@@ -1,5 +1,6 @@
 package net.kemitix.wrapper;
 
+import lombok.val;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,11 +13,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WrapperStateTest {
 
     @Test
-    public void canCreateStateForAnObject() {
+    public void canCreateWrapperStateForObject() {
         //given
-        final Object o = new Object();
+        val o = createSubject();
         //when
-        final WrapperState<Object> wrapperState = new WrapperState<>(o);
+        val wrapperState = createWrapperState(o);
         //then
         assertThat(wrapperState.getWrapperCore()).isSameAs(o);
         assertThat(wrapperState.getWrapperDelegate()).isSameAs(o);
@@ -25,54 +26,27 @@ public class WrapperStateTest {
     @Test
     public void canCreateStateForWrappedObject() {
         //given
-        final Object o = new Object();
-        final WrapperState<Object> existingWrapperState = new WrapperState<>(o);
+        val o = createSubject();
+        val inner = createWrapperState(o);
         //when
-        final WrapperState<Object> wrapperState = new WrapperState<>(existingWrapperState);
+        val wrapperState = createWrapperState(inner);
         //then
-        assertThat(wrapperState.getWrapperDelegate()).isSameAs(existingWrapperState);
+        assertThat(wrapperState.getWrapperDelegate()).isSameAs(inner);
     }
 
-    @Test
-    public void whenOneInnerWrapperCanRemoveIt() {
-        //given
-        final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
-        //when
-        second.removeWrapper(first);
-        //then
-        assertThat(second.getWrapperDelegate()).isSameAs(o);
+    private WrapperState<Subject> createWrapperState(final Subject o) {
+        return new WrapperState<>(o);
     }
 
-    @Test
-    public void whenTwoInnerWrappersCanRemoveFirst() {
-        //given
-        final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
-        final WrapperState<Object> third = new WrapperState<>(second);
-        //when
-        third.removeWrapper(first);
-        //then
-        assertThat(second.getWrapperDelegate()).isSameAs(o);// second now wraps o directly
-        assertThat(third.getWrapperDelegate()).isSameAs(second);// no change
+    private WrapperState<Subject> createWrapperState(final WrapperState<Subject> inner) {
+        return new WrapperState<>(inner);
     }
 
-    @Test
-    public void whenTwoInnerWrappersCanRemoveSecond() {
-        //given
-        final Object o = new Object();
-        final WrapperState<Object> first = new WrapperState<>(o);
-        final WrapperState<Object> second = new WrapperState<>(first);
-        final WrapperState<Object> third = new WrapperState<>(second);
-        assertThat(first.getWrapperDelegate()).isSameAs(o);
-        assertThat(second.getWrapperDelegate()).isSameAs(first);
-        assertThat(third.getWrapperDelegate()).isSameAs(second);
-        //when
-        third.removeWrapper(second);
-        //then
-        assertThat(first.getWrapperDelegate()).isSameAs(o);// no change
-        assertThat(third.getWrapperDelegate()).isSameAs(first);// third now wraps first
+    private Subject createSubject() {
+        return new Subject();
+    }
+
+    private class Subject {
+
     }
 }
