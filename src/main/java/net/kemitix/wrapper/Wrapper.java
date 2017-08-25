@@ -66,12 +66,18 @@ public interface Wrapper<T> {
     /**
      * Remove the wrapper from the chain of wrappers.
      *
-     * <p>Can't be <em>this</em> wrapper.</p>
-     *
      * @param wrapper the wrapper to remove
+     *
+     * @return {@code this} Wrapper if {@code wrapper} is not {@code this}, otherwise the Wrapper Delegate, which may be
+     * the Wrapper Core
      */
-    default void removeWrapper(@NonNull Wrapper<T> wrapper) {
-        getWrapperState().removeWrapper(wrapper);
+    @SuppressWarnings("unchecked")
+    default T removeWrapper(@NonNull Wrapper<T> wrapper) {
+        if (wrapper == this) {
+            return getWrapperDelegate();
+        }
+        return Optional.ofNullable(getWrapperState().removeWrapper(wrapper))
+                       .orElse((T) this);
     }
 
     /**
@@ -88,5 +94,21 @@ public interface Wrapper<T> {
         return getWrapperState().findInnerWrapper()
                                 .map(Wrapper::asCore)
                                 .orElseGet(this::getWrapperCore);
+    }
+
+    /**
+     * Checks if the item is a Wrapper, and returns it as one, inside an Optional, if it is, otherwise it returns empty.
+     *
+     * @param item The item to check
+     * @param <T>  The type of the item
+     *
+     * @return an Optional containing either the item as a Wrapper, or empty is item isn't a Wrapper
+     */
+    @SuppressWarnings("unchecked")
+    static <T> Optional<Wrapper<T>> asWrapper(@NonNull T item) {
+        if (item instanceof Wrapper) {
+            return Optional.of((Wrapper<T>) item);
+        }
+        return Optional.empty();
     }
 }
