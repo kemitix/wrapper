@@ -91,9 +91,10 @@ public interface Wrapper<T> {
     }
 
     default T getWrapperDelegate() {
-        return getWrapperState().findInnerWrapper()
-                                .map(Wrapper::asCore)
-                                .orElseGet(this::getWrapperCore);
+        return getWrapperState()
+                .findInnerWrapper()
+                .<T>map(Wrapper::asCore)
+                .orElseGet(this::getWrapperCore);
     }
 
     /**
