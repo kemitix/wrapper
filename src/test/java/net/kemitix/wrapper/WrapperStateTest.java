@@ -21,7 +21,6 @@
 
 package net.kemitix.wrapper;
 
-import lombok.val;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,9 +35,9 @@ public class WrapperStateTest {
     @Test
     public void canCreateWrapperStateForObject() {
         //given
-        val o = createSubject();
+        final Subject o = createSubject();
         //when
-        val wrapperState = createWrapperState(o);
+        final WrapperState<Subject> wrapperState = createWrapperState(o);
         //then
         assertThat(wrapperState.getWrapperCore()).isSameAs(o);
         assertThat(wrapperState.getWrapperDelegate()).isSameAs(o);
@@ -47,10 +46,10 @@ public class WrapperStateTest {
     @Test
     public void canCreateStateForWrappedObject() {
         //given
-        val o = createSubject();
-        val inner = createWrapperState(o);
+        final Subject o = createSubject();
+        final WrapperState<Subject> inner = createWrapperState(o);
         //when
-        val wrapperState = createWrapperState(inner);
+        final WrapperState<Subject> wrapperState = createWrapperState(inner);
         //then
         assertThat(wrapperState.getWrapperDelegate()).isSameAs(inner);
     }
