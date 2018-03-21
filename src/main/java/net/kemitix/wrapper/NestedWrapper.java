@@ -24,8 +24,20 @@ package net.kemitix.wrapper;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * A Wrapper that contains another Wrapper.
+ *
+ * @param <T> the type of the subject.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
 class NestedWrapper<T> extends AtomicReference<Wrapper<T>> implements Wrapper<T> {
 
+    /**
+     * Constructor.
+     *
+     * @param wrapper the wrapper to wrap
+     */
     NestedWrapper(Wrapper<T> wrapper) {
         super(wrapper);
     }
