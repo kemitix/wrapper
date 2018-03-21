@@ -23,6 +23,7 @@ package net.kemitix.wrapper;
 
 import lombok.NonNull;
 
+import java.nio.channels.WritePendingException;
 import java.util.Optional;
 
 /**
@@ -38,78 +39,31 @@ import java.util.Optional;
  */
 public interface Wrapper<T> {
 
-    /**
-     * Gets the Wrapper's state object.
-     *
-     * @return the WrapperState
-     */
-    WrapperState<T> getWrapperState();
-
-    /**
-     * Fetch the core item being Wrapper.
-     *
-     * @return the core item
-     */
-    default T getWrapperCore() {
-        return getWrapperState().getWrapperCore();
+    static <T> Wrapper<T> wrap(@NonNull final T subject) {
+        return new SubjectWrapper<T>(subject);
     }
 
-    /**
-     * Gets the inner wrapper if one is present.
-     *
-     * @return An Optional containing the inner wrapper if present, otherwise is empty
-     */
-    default Optional<Wrapper<T>> findInnerWrapper() {
-        return getWrapperState().findInnerWrapper();
+    T getCore();
+
+    static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> inner) {
+        return new NestedWrapper<T>(inner);
     }
 
-    /**
-     * Remove the wrapper from the chain of wrappers.
-     *
-     * @param wrapper the wrapper to remove
-     *
-     * @return {@code this} Wrapper if {@code wrapper} is not {@code this}, otherwise the Wrapper Delegate, which may be
-     * the Wrapper Core
-     */
-    @SuppressWarnings("unchecked")
-    default T removeWrapper(@NonNull Wrapper<T> wrapper) {
-        if (wrapper == this) {
-            return getWrapperDelegate();
-        }
-        return Optional.ofNullable(getWrapperState().removeWrapper(wrapper))
-                       .orElse((T) this);
-    }
+    Optional<Wrapper<T>> getInner();
 
-    /**
-     * Provides the core item's own interface.
-     *
-     * @return the core item as a T object
-     */
-    @SuppressWarnings("unchecked")
-    default T asCore() {
-        return (T) this;
-    }
-
-    default T getWrapperDelegate() {
-        return getWrapperState()
-                .findInnerWrapper()
-                .<T>map(Wrapper::asCore)
-                .orElseGet(this::getWrapperCore);
-    }
-
-    /**
-     * Checks if the item is a Wrapper, and returns it as one, inside an Optional, if it is, otherwise it returns empty.
-     *
-     * @param item The item to check
-     * @param <T>  The type of the item
-     *
-     * @return an Optional containing either the item as a Wrapper, or empty is item isn't a Wrapper
-     */
-    @SuppressWarnings("unchecked")
-    static <T> Optional<Wrapper<T>> asWrapper(@NonNull T item) {
-        if (item instanceof Wrapper) {
-            return Optional.of((Wrapper<T>) item);
-        }
-        return Optional.empty();
+    static <T> Wrapper<T> remove(
+            @NonNull final Wrapper<T> remove,
+            @NonNull final Wrapper<T> wrapper
+    ) {
+        return wrapper.getInner()
+                .map(inner -> {
+                    if (inner.equals(remove)) {
+                        return inner.getInner()
+                                .map(Wrapper::wrap)
+                                .orElseGet(() -> Wrapper.wrap(inner.getCore()));
+                    }
+                    return Wrapper.wrap(Wrapper.remove(remove, inner));
+                })
+                .orElse(wrapper);
     }
 }

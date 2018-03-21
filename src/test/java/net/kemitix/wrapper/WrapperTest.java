@@ -1,9 +1,6 @@
 package net.kemitix.wrapper;
 
-import lombok.val;
 import org.junit.Test;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -16,192 +13,112 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 public class WrapperTest {
 
     @Test
-    public void canGetWrapperCore() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        //when
-        final Subject wrapperCore = wrapper.getWrapperCore();
-        //then
-        assertThat(wrapperCore).isSameAs(subject);
+    public void wrapperRequiresSubject() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> Wrapper.wrap((Subject) null))
+                .withMessage("subject");
     }
 
     @Test
-    public void canFindInnerWrapperInState() {
-        //given
-        val subject = createSubject();
-        val inner = createWrapper(subject);
-        val outer = createWrapper(inner);
-        //when
-        final Optional<Wrapper<Subject>> innerWrapper = outer.findInnerWrapper();
-        //then
-        assertThat(innerWrapper).contains(inner);
-    }
-
-    @Test
-    public void removeWrapperRequiresAWrapper() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        //then
-        assertThatNullPointerException().isThrownBy(() ->
-                                                            //when
-                                                            wrapper.removeWrapper(null))
-                                        //and
-                                        .withMessage("wrapper");
-    }
-
-    @Test
-    public void whenSingleWrapperCanRemoveItself() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        assertThat(wrapper.getWrapperDelegate()).isSameAs(subject);
-        //when
-        val result = doRemoveWrapper(wrapper, wrapper);
-        //then
-        assertThat(result).isSameAs(subject);
-    }
-
-    @Test
-    public void whenWrapperToRemoveIsInvalidThenIgnoreAndReturnSelf() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        val other = createWrapper(subject);
-        //when
-        val result = doRemoveWrapper(wrapper, other);
-        //then
-        assertThat(result).isSameAs(wrapper);
-        val resultAsWrapper = verifyIsAWrapper(result);
-        assertThat(resultAsWrapper.getWrapperDelegate()).isSameAs(subject);
-    }
-
-    @Test
-    public void whenTwoWrappersCanRemoveInner() {
-        //given
-        val subject = createSubject();
-        val inner = createWrapper(subject);
-        val outer = createWrapper(inner);
-        //when
-        val result = doRemoveWrapper(outer, inner);
-        //then
-        assertThat(result).isSameAs(outer);
-        val resultAsWrapper = verifyIsAWrapper(result);
-        assertThat(resultAsWrapper.getWrapperDelegate()).isSameAs(subject);
-    }
-
-    @Test
-    public void whenTwoInnerWrappersCanRemoveFirst() {
-        //given
-        val subject = createSubject();
-        val inner = createWrapper(subject);
-        val middle = createWrapper(inner);
-        val outer = createWrapper(middle);
-        //when
-        val result = doRemoveWrapper(outer, inner);
-        //then
-        assertThat(result).isSameAs(outer);
-        assertThat(outer.getWrapperDelegate()).isSameAs(middle);
-        assertThat(middle.getWrapperDelegate()).isSameAs(subject);
-    }
-
-    @Test
-    public void whenTwoInnerWrappersCanRemoveSecond() {
-        //given
-        val subject = createSubject();
-        val inner = createWrapper(subject);
-        val middle = createWrapper(inner);
-        val outer = createWrapper(middle);
-        //when
-        val result = doRemoveWrapper(outer, middle);
-        //then
-        assertThat(result).isSameAs(outer);
-        val resultAsWrapper = verifyIsAWrapper(result);
-        assertThat(resultAsWrapper.getWrapperDelegate()).isSameAs(inner);
-        assertThat(inner.getWrapperDelegate()).isSameAs(subject);
-    }
-
-    @Test
-    public void canRemoveOnlyWrapper() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        //when
-        val result = doRemoveWrapper(wrapper, wrapper);
-        //then
-        assertThat(result).isSameAs(subject);
-    }
-
-    @Test
-    public void whenItemIsReallyAWrapperThenCanGetItAsAWrapper() {
-        //given
-        val subject = createSubject();
-        val wrapper = createWrapper(subject);
-        val asSubject = (Subject) wrapper;
-        //when
-        val asWrapper = Wrapper.asWrapper(asSubject);
-        //then
-        assertThat(asWrapper).contains(wrapper);
-    }
-
-    @Test
-    public void whenItemIsNotReallyAWrapperThenDoNotGetItAsAWrapper() {
-        //given
-        val subject = createSubject();
-        //when
-        val asWrapper = Wrapper.asWrapper(subject);
-        //then
-        assertThat(asWrapper).isEmpty();
-    }
-
-    @Test
-    public void whenItemIsNullThenAsWrapperThrowsException() {
-        assertThatNullPointerException().isThrownBy(() -> Wrapper.asWrapper(null))
-                                        .withMessage("item");
-    }
-
     @SuppressWarnings("unchecked")
-    private Wrapper<Subject> verifyIsAWrapper(final Subject subject) {
-        assertThat(subject).isInstanceOf(Wrapper.class);
-        return (Wrapper<Subject>) subject;
+    public void wrapRequiresInner() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> Wrapper.wrap((Wrapper) null))
+                .withMessage("inner");
     }
 
-    private Subject doRemoveWrapper(final Wrapper<Subject> from, final Wrapper<Subject> what) {
-        return from.removeWrapper(what);
+    @Test
+    public void canWrapAndUnwrapASubject() {
+        //given
+        final Subject subject = new Subject();
+        //when
+        final Wrapper<Subject> wrapped = Wrapper.wrap(subject);
+        //then
+        assertThat(wrapped).returns(subject, Wrapper::getCore);
     }
 
-    private Wrapper<Subject> createWrapper(final Subject o) {
-        return new SubjectWrapper(o);
+    @Test
+    public void canWrapAWrappedSubjectAndGetSubject() {
+        //given
+        final Subject subject = new Subject();
+        final Wrapper<Subject> inner = Wrapper.wrap(subject);
+        //when
+        final Wrapper<Subject> outer = Wrapper.wrap(inner);
+        //then
+        assertThat(outer).returns(subject, Wrapper::getCore);
     }
 
-    private Wrapper<Subject> createWrapper(final Wrapper<Subject> inner) {
-        return new SubjectWrapper(inner);
+    @Test
+    public void canWrapAndUnwrapAWrappedSubject() {
+        //given
+        final Subject subject = new Subject();
+        final Wrapper<Subject> inner = Wrapper.wrap(subject);
+        //when
+        final Wrapper<Subject> outer = Wrapper.wrap(inner);
+        //then
+        assertThat(outer.getInner()).contains(inner);
     }
 
-    private Subject createSubject() {
-        return new Subject();
+    @Test
+    public void removeRequiresWrapperToBeRemoved() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> Wrapper.remove(null, Wrapper.wrap(new Subject())))
+                .withMessage("remove");
     }
 
-    private class SubjectWrapper extends Subject implements Wrapper<Subject> {
+    @Test
+    public void removeRequiresWrapperToRemoveFrom() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> Wrapper.remove(Wrapper.wrap(new Subject()), null))
+                .withMessage("wrapper");
+    }
 
-        private WrapperState<Subject> wrapperState;
+    @Test
+    public void canRemoveInnerWrapper() {
+        //given
+        final Subject subject = new Subject();
+        final Wrapper<Subject> inner = Wrapper.wrap(subject);
+        final Wrapper<Subject> outer = Wrapper.wrap(inner);
+        //when
+        final Wrapper<Subject> result = Wrapper.remove(inner, outer);
+        //then
+        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result.getInner()).isEmpty();
+    }
 
-        SubjectWrapper(final Subject o) {
-            wrapperState = new WrapperState<>(o);
-        }
+    @Test
+    public void attemptingToRemoveAnUnknownWrapperReturnsOriginalWrapper() {
+        //given
+        final Subject subject = new Subject();
+        final Wrapper<Subject> inner = Wrapper.wrap(subject);
+        final Wrapper<Subject> outer = Wrapper.wrap(inner);
+        final Wrapper<Subject> unknownWrapper = Wrapper.wrap(new Subject());
+        //when
+        final Wrapper<Subject> result = Wrapper.remove(unknownWrapper, outer);
+        //then
+        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result.getInner()).contains(inner);
+    }
 
-        SubjectWrapper(final Wrapper<Subject> inner) {
-            wrapperState = new WrapperState<>(inner);
-        }
-
-        @Override
-        public WrapperState<Subject> getWrapperState() {
-            return this.wrapperState;
-        }
+    @Test
+    public void canRemoveAnInnerThatHasAnInner() {
+        //given
+        final Subject subject = new Subject();
+        final Wrapper<Subject> inner = Wrapper.wrap(subject);
+        final Wrapper<Subject> middle = Wrapper.wrap(inner);
+        final Wrapper<Subject> outer = Wrapper.wrap(middle);
+        //when
+        final Wrapper<Subject> result = Wrapper.remove(middle, outer);
+        //then
+        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result.getInner()).contains(inner);
     }
 
     private class Subject {
-
+        @Override
+        public String toString() {
+            return "subject";
+        }
     }
+
 }
