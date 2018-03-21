@@ -33,7 +33,7 @@ class SubjectWrapper<T>
     }
 
     @Override
-    public T getCore() {
+    public T getSubject() {
         return get();
     }
 

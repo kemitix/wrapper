@@ -23,7 +23,6 @@ package net.kemitix.wrapper;
 
 import lombok.NonNull;
 
-import java.nio.channels.WritePendingException;
 import java.util.Optional;
 
 /**
@@ -39,18 +38,39 @@ import java.util.Optional;
  */
 public interface Wrapper<T> {
 
+    /**
+     * Wrap the subject.
+     *
+     * @param subject the subject to wrap
+     * @param <T> the type of the subject
+     *
+     * @return a Wrapper containing the subject
+     */
     static <T> Wrapper<T> wrap(@NonNull final T subject) {
         return new SubjectWrapper<T>(subject);
     }
 
-    T getCore();
-
-    static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> inner) {
-        return new NestedWrapper<T>(inner);
+    /**
+     * Wrap a wrapper.
+     *
+     * @param wrapper the wrapper to wrap
+     * @param <T> the type of the subject of the wrapper
+     *
+     * @return a Wrapper containing the wrapper
+     */
+    static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
+        return new NestedWrapper<T>(wrapper);
     }
 
-    Optional<Wrapper<T>> getInner();
-
+    /**
+     * Remove an inner wrapper.
+     *
+     * @param remove the wrapper to remove
+     * @param wrapper the outer wrapper
+     * @param <T> the type of the subject of the wrapper
+     *
+     * @return a Wrapper with the remove wrapper removed
+     */
     static <T> Wrapper<T> remove(
             @NonNull final Wrapper<T> remove,
             @NonNull final Wrapper<T> wrapper
@@ -60,10 +80,24 @@ public interface Wrapper<T> {
                     if (inner.equals(remove)) {
                         return inner.getInner()
                                 .map(Wrapper::wrap)
-                                .orElseGet(() -> Wrapper.wrap(inner.getCore()));
+                                .orElseGet(() -> Wrapper.wrap(inner.getSubject()));
                     }
                     return Wrapper.wrap(Wrapper.remove(remove, inner));
                 })
                 .orElse(wrapper);
     }
+
+    /**
+     * The subject within the innermost wrapper.
+     *
+     * @return the subject
+     */
+    T getSubject();
+
+    /**
+     * The wrapper immediately within the current wrapper.
+     *
+     * @return an Optional containing the nested wrapper, or empty if this wrapper has no inner wrapper.
+     */
+    Optional<Wrapper<T>> getInner();
 }

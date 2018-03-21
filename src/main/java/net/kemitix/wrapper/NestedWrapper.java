@@ -31,8 +31,8 @@ class NestedWrapper<T> extends AtomicReference<Wrapper<T>> implements Wrapper<T>
     }
 
     @Override
-    public T getCore() {
-        return get().getCore();
+    public T getSubject() {
+        return get().getSubject();
     }
 
     @Override

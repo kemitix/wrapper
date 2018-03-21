@@ -34,7 +34,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> wrapped = Wrapper.wrap(subject);
         //then
-        assertThat(wrapped).returns(subject, Wrapper::getCore);
+        assertThat(wrapped).returns(subject, Wrapper::getSubject);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer).returns(subject, Wrapper::getCore);
+        assertThat(outer).returns(subject, Wrapper::getSubject);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(inner, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result).returns(subject, Wrapper::getSubject);
         assertThat(result.getInner()).isEmpty();
     }
 
@@ -96,7 +96,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(unknownWrapper, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result).returns(subject, Wrapper::getSubject);
         assertThat(result.getInner()).contains(inner);
     }
 
@@ -110,7 +110,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(middle, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getCore);
+        assertThat(result).returns(subject, Wrapper::getSubject);
         assertThat(result.getInner()).contains(inner);
     }
 
