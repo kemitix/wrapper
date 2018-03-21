@@ -20,9 +20,4 @@ class SubjectWrapper<T>
     public Optional<Wrapper<T>> getInner() {
         return Optional.empty();
     }
-
-    @Override
-    public String toString() {
-        return "SubjectWrapper["+ get() + "]";
-    }
 }

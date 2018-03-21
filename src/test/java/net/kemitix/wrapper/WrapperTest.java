@@ -115,10 +115,6 @@ public class WrapperTest {
     }
 
     private class Subject {
-        @Override
-        public String toString() {
-            return "subject";
-        }
     }
 
 }

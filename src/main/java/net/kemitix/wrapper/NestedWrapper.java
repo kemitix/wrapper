@@ -18,9 +18,4 @@ class NestedWrapper<T> extends AtomicReference<Wrapper<T>> implements Wrapper<T>
     public Optional<Wrapper<T>> getInner() {
         return Optional.of(get());
     }
-
-    @Override
-    public String toString() {
-        return "NestedWrapper["+ getInner() + "]";
-    }
 }
