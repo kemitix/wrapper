@@ -38,7 +38,7 @@ class NestedWrapper<T> extends AtomicReference<Wrapper<T>> implements Wrapper<T>
      *
      * @param wrapper the wrapper to wrap
      */
-    NestedWrapper(Wrapper<T> wrapper) {
+    NestedWrapper(final Wrapper<T> wrapper) {
         super(wrapper);
     }
 
