@@ -45,15 +45,8 @@ pipeline {
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK LTS') {
                     sh "${mvn} clean install"
-                }
-            }
-        }
-        stage('Test Results') {
-            when { expression { findFiles(glob: '**/target/surefire-reports/*.xml').length > 0 } }
-            steps {
-                junit '**/target/surefire-reports/*.xml'
-                jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
-                withMaven(maven: 'maven', jdk: 'JDK LTS') {
+                    junit '**/target/surefire-reports/*.xml'
+                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
                     sh "${mvn} com.gavinmogan:codacy-maven-plugin:coverage " +
                             "-DcoverageReportFile=target/site/jacoco/jacoco.xml " +
                             "-DprojectToken=`$JENKINS_HOME/codacy/token` " +
