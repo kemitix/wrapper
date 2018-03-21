@@ -24,7 +24,7 @@ public class WrapperTest {
     public void wrapRequiresInner() {
         assertThatNullPointerException()
                 .isThrownBy(() -> Wrapper.wrap((Wrapper) null))
-                .withMessage("inner");
+                .withMessage("wrapper");
     }
 
     @Test
