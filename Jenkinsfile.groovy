@@ -41,13 +41,6 @@ pipeline {
                 }
             }
         }
-        stage('Build Java Next') {
-            steps {
-                withMaven(maven: 'maven', jdk: 'JDK Next') {
-                    sh "${mvn} clean install -Djava.version=9"
-                }
-            }
-        }
         stage('Build Java LTS') {
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK LTS') {
@@ -80,6 +73,13 @@ pipeline {
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK LTS') {
                     sh "${mvn} deploy --activate-profiles release -DskipTests=true"
+                }
+            }
+        }
+        stage('Build Java Next') {
+            steps {
+                withMaven(maven: 'maven', jdk: 'JDK Next') {
+                    sh "${mvn} clean install -Djava.version=9"
                 }
             }
         }
