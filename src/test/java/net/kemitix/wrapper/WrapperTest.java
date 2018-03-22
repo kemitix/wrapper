@@ -34,7 +34,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> wrapped = Wrapper.wrap(subject);
         //then
-        assertThat(wrapped).returns(subject, Wrapper::getSubject);
+        assertThat(wrapped).returns(subject, Wrapper::wrapperSubject);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer).returns(subject, Wrapper::getSubject);
+        assertThat(outer).returns(subject, Wrapper::wrapperSubject);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer.getInner()).contains(inner);
+        assertThat(outer.wrapperInner()).contains(inner);
     }
 
     @Test
@@ -82,8 +82,8 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(inner, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getSubject);
-        assertThat(result.getInner()).isEmpty();
+        assertThat(result).returns(subject, Wrapper::wrapperSubject);
+        assertThat(result.wrapperInner()).isEmpty();
     }
 
     @Test
@@ -96,8 +96,8 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(unknownWrapper, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getSubject);
-        assertThat(result.getInner()).contains(inner);
+        assertThat(result).returns(subject, Wrapper::wrapperSubject);
+        assertThat(result.wrapperInner()).contains(inner);
     }
 
     @Test
@@ -110,8 +110,8 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(middle, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::getSubject);
-        assertThat(result.getInner()).contains(inner);
+        assertThat(result).returns(subject, Wrapper::wrapperSubject);
+        assertThat(result.wrapperInner()).contains(inner);
     }
 
     private class Subject {

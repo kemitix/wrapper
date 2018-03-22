@@ -75,12 +75,12 @@ public interface Wrapper<T> {
             @NonNull final Wrapper<T> remove,
             @NonNull final Wrapper<T> wrapper
     ) {
-        return wrapper.getInner()
+        return wrapper.wrapperInner()
                 .map(inner -> {
                     if (inner.equals(remove)) {
-                        return inner.getInner()
+                        return inner.wrapperInner()
                                 .map(Wrapper::wrap)
-                                .orElseGet(() -> Wrapper.wrap(inner.getSubject()));
+                                .orElseGet(() -> Wrapper.wrap(inner.wrapperSubject()));
                     }
                     return Wrapper.wrap(Wrapper.remove(remove, inner));
                 })
@@ -92,12 +92,12 @@ public interface Wrapper<T> {
      *
      * @return the subject
      */
-    T getSubject();
+    T wrapperSubject();
 
     /**
      * The wrapper immediately within the current wrapper.
      *
      * @return an Optional containing the nested wrapper, or empty if this wrapper has no inner wrapper.
      */
-    Optional<Wrapper<T>> getInner();
+    Optional<Wrapper<T>> wrapperInner();
 }

@@ -45,12 +45,12 @@ class SubjectWrapper<T>
     }
 
     @Override
-    public T getSubject() {
+    public T wrapperSubject() {
         return get();
     }
 
     @Override
-    public Optional<Wrapper<T>> getInner() {
+    public Optional<Wrapper<T>> wrapperInner() {
         return Optional.empty();
     }
 }
