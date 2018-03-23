@@ -72,7 +72,7 @@ pipeline {
         stage('Build Java Next') {
             steps {
                 withMaven(maven: 'maven', jdk: 'JDK Next') {
-                    sh "${mvn} clean install -Djava.version=9"
+                    sh "${mvn} clean verify -Djava.version=9"
                 }
             }
         }
