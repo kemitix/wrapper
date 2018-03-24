@@ -42,7 +42,7 @@ public interface Wrapper<T> {
      * Wrap the subject.
      *
      * @param subject the subject to wrap
-     * @param <T> the type of the subject
+     * @param <T>     the type of the subject
      *
      * @return a Wrapper containing the subject
      */
@@ -54,28 +54,12 @@ public interface Wrapper<T> {
      * Wrap a wrapper.
      *
      * @param wrapper the wrapper to wrap
-     * @param <T> the type of the subject of the wrapper
+     * @param <T>     the type of the subject of the wrapper
      *
      * @return a Wrapper containing the wrapper
      */
     static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
         return new NestedWrapper<>(wrapper);
-    }
-
-    /**
-     * Remove an inner wrapper.
-     *
-     * @param <T> the type of the subject of the wrapper
-     *
-     * @param remove the wrapper to remove
-     * @param wrapper the outer wrapper
-     * @return a Wrapper with the remove wrapper removed
-     */
-    static <T> Optional<Wrapper<T>> remove(
-            @NonNull final Wrapper<T> remove,
-            @NonNull final Wrapper<T> wrapper
-    ) {
-        return Optional.empty();
     }
 
     /**
