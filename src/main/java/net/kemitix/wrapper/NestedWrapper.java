@@ -21,8 +21,9 @@
 
 package net.kemitix.wrapper;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A Wrapper that contains another Wrapper.
@@ -31,26 +32,18 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-class NestedWrapper<T>
-        extends AtomicReference<Wrapper<T>>
-        implements Wrapper<T> {
+@RequiredArgsConstructor
+class NestedWrapper<T> implements Wrapper<T> {
 
-    /**
-     * Constructor.
-     *
-     * @param wrapper the wrapper to wrap
-     */
-    NestedWrapper(final Wrapper<T> wrapper) {
-        super(wrapper);
+    private final Wrapper<T> innerWrapper;
+
+    @Override
+    public T getWrapperSubject() {
+        return innerWrapper.getWrapperSubject();
     }
 
     @Override
-    public T wrapperSubject() {
-        return get().wrapperSubject();
-    }
-
-    @Override
-    public Optional<Wrapper<T>> wrapperInner() {
-        return Optional.of(get());
+    public Optional<Wrapper<T>> getInnerWrapper() {
+        return Optional.of(innerWrapper);
     }
 }

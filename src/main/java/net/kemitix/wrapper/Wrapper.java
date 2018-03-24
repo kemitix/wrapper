@@ -42,49 +42,24 @@ public interface Wrapper<T> {
      * Wrap the subject.
      *
      * @param subject the subject to wrap
-     * @param <T> the type of the subject
+     * @param <T>     the type of the subject
      *
      * @return a Wrapper containing the subject
      */
     static <T> Wrapper<T> wrap(@NonNull final T subject) {
-        return new SubjectWrapper<T>(subject);
+        return new SubjectWrapper<>(subject);
     }
 
     /**
      * Wrap a wrapper.
      *
      * @param wrapper the wrapper to wrap
-     * @param <T> the type of the subject of the wrapper
+     * @param <T>     the type of the subject of the wrapper
      *
      * @return a Wrapper containing the wrapper
      */
     static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
-        return new NestedWrapper<T>(wrapper);
-    }
-
-    /**
-     * Remove an inner wrapper.
-     *
-     * @param remove the wrapper to remove
-     * @param wrapper the outer wrapper
-     * @param <T> the type of the subject of the wrapper
-     *
-     * @return a Wrapper with the remove wrapper removed
-     */
-    static <T> Wrapper<T> remove(
-            @NonNull final Wrapper<T> remove,
-            @NonNull final Wrapper<T> wrapper
-    ) {
-        return wrapper.wrapperInner()
-                .map(inner -> {
-                    if (inner.equals(remove)) {
-                        return inner.wrapperInner()
-                                .map(Wrapper::wrap)
-                                .orElseGet(() -> Wrapper.wrap(inner.wrapperSubject()));
-                    }
-                    return Wrapper.wrap(Wrapper.remove(remove, inner));
-                })
-                .orElse(wrapper);
+        return new NestedWrapper<>(wrapper);
     }
 
     /**
@@ -92,12 +67,12 @@ public interface Wrapper<T> {
      *
      * @return the subject
      */
-    T wrapperSubject();
+    T getWrapperSubject();
 
     /**
      * The wrapper immediately within the current wrapper.
      *
      * @return an Optional containing the nested wrapper, or empty if this wrapper has no inner wrapper.
      */
-    Optional<Wrapper<T>> wrapperInner();
+    Optional<Wrapper<T>> getInnerWrapper();
 }

@@ -2,6 +2,8 @@ package net.kemitix.wrapper;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
@@ -34,7 +36,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> wrapped = Wrapper.wrap(subject);
         //then
-        assertThat(wrapped).returns(subject, Wrapper::wrapperSubject);
+        assertThat(wrapped).returns(subject, Wrapper::getWrapperSubject);
     }
 
     @Test
@@ -45,7 +47,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer).returns(subject, Wrapper::wrapperSubject);
+        assertThat(outer).returns(subject, Wrapper::getWrapperSubject);
     }
 
     @Test
@@ -56,62 +58,18 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer.wrapperInner()).contains(inner);
+        assertThat(outer.getInnerWrapper()).contains(inner);
     }
 
     @Test
-    public void removeRequiresWrapperToBeRemoved() {
-        assertThatNullPointerException()
-                .isThrownBy(() -> Wrapper.remove(null, Wrapper.wrap(new Subject())))
-                .withMessage("remove");
-    }
-
-    @Test
-    public void removeRequiresWrapperToRemoveFrom() {
-        assertThatNullPointerException()
-                .isThrownBy(() -> Wrapper.remove(Wrapper.wrap(new Subject()), null))
-                .withMessage("wrapper");
-    }
-
-    @Test
-    public void canRemoveInnerWrapper() {
+    public void singleWrapperHasNoInnerWrapper() {
         //given
         final Subject subject = new Subject();
-        final Wrapper<Subject> inner = Wrapper.wrap(subject);
-        final Wrapper<Subject> outer = Wrapper.wrap(inner);
+        final Wrapper<Subject> wrapper = Wrapper.wrap(subject);
         //when
-        final Wrapper<Subject> result = Wrapper.remove(inner, outer);
+        final Optional<Wrapper<Subject>> result = wrapper.getInnerWrapper();
         //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).isEmpty();
-    }
-
-    @Test
-    public void attemptingToRemoveAnUnknownWrapperReturnsOriginalWrapper() {
-        //given
-        final Subject subject = new Subject();
-        final Wrapper<Subject> inner = Wrapper.wrap(subject);
-        final Wrapper<Subject> outer = Wrapper.wrap(inner);
-        final Wrapper<Subject> unknownWrapper = Wrapper.wrap(new Subject());
-        //when
-        final Wrapper<Subject> result = Wrapper.remove(unknownWrapper, outer);
-        //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).contains(inner);
-    }
-
-    @Test
-    public void canRemoveAnInnerThatHasAnInner() {
-        //given
-        final Subject subject = new Subject();
-        final Wrapper<Subject> inner = Wrapper.wrap(subject);
-        final Wrapper<Subject> middle = Wrapper.wrap(inner);
-        final Wrapper<Subject> outer = Wrapper.wrap(middle);
-        //when
-        final Wrapper<Subject> result = Wrapper.remove(middle, outer);
-        //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).contains(inner);
+        assertThat(result).isEmpty();
     }
 
     private class Subject {
