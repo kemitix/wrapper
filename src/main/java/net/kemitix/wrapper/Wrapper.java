@@ -80,9 +80,9 @@ public interface Wrapper<T> {
                     if (inner.equals(remove)) {
                         return inner.getInnerWrapper()
                                 .map(Wrapper::wrap)
-                                .orElseGet(() -> Wrapper.wrap(inner.getWrapperSubject()));
+                                .orElseGet(() -> wrap(inner.getWrapperSubject()));
                     }
-                    return Wrapper.wrap(Wrapper.remove(remove, inner));
+                    return wrap(remove(remove, inner));
                 })
                 .orElse(wrapper);
     }
