@@ -3,12 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>net.kemitix</groupId>
         <artifactId>kemitix-parent</artifactId>
         <version>5.1.0</version>
         <relativePath/>
     </parent>
+
+    <artifactId>wrapper</artifactId>
+    <version>0.4.0-SNAPSHOT</version>
+    <name>Wrapper</name>
+    <description>Wrapper for Generic types.</description>
+
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.16.20</lombok.version>
@@ -19,10 +26,7 @@
         <kemitix-tiles.version>0.8.1</kemitix-tiles.version>
         <kemitix-checkstyle.version>4.0.1</kemitix-checkstyle.version>
     </properties>
-    <artifactId>wrapper</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
-    <name>Wrapper</name>
-    <description>Wrapper for Generic types.</description>
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -67,4 +71,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
