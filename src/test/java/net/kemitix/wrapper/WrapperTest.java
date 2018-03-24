@@ -120,12 +120,8 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(middle, outer);
         //then
-        // result -> inner' -> subject
-        assertThat(result.getInnerWrapper()).isNotEmpty();
-        result.getInnerWrapper()
-                .ifPresent(wrapper ->
-                        assertThat(wrapper).isSameAs(inner)
-        );
+        // result -> inner -> subject
+        assertThat(result.getInnerWrapper()).containsSame(inner);
     }
 
     private class Subject {
