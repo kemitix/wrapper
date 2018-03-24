@@ -31,7 +31,9 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-class NestedWrapper<T> extends AtomicReference<Wrapper<T>> implements Wrapper<T> {
+class NestedWrapper<T>
+        extends AtomicReference<Wrapper<T>>
+        implements Wrapper<T> {
 
     /**
      * Constructor.
