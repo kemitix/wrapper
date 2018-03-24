@@ -34,7 +34,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> wrapped = Wrapper.wrap(subject);
         //then
-        assertThat(wrapped).returns(subject, Wrapper::wrapperSubject);
+        assertThat(wrapped).returns(subject, Wrapper::getWrapperSubject);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer).returns(subject, Wrapper::wrapperSubject);
+        assertThat(outer).returns(subject, Wrapper::getWrapperSubject);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         //then
-        assertThat(outer.wrapperInner()).contains(inner);
+        assertThat(outer.getInnerWrapper()).contains(inner);
     }
 
     @Test
@@ -82,8 +82,8 @@ public class WrapperTest {
         //when
         final Wrapper<Subject> result = Wrapper.remove(inner, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).isEmpty();
+        assertThat(result).returns(subject, Wrapper::getWrapperSubject);
+        assertThat(result.getInnerWrapper()).isEmpty();
     }
 
     @Test
@@ -93,11 +93,16 @@ public class WrapperTest {
         final Wrapper<Subject> inner = Wrapper.wrap(subject);
         final Wrapper<Subject> outer = Wrapper.wrap(inner);
         final Wrapper<Subject> unknownWrapper = Wrapper.wrap(new Subject());
+        // outer -> inner -> subject
+        assertThat(outer.getInnerWrapper()).containsSame(inner);
+        assertThat(inner.getInnerWrapper()).isEmpty();
+        assertThat(inner.getWrapperSubject()).isSameAs(subject);
         //when
         final Wrapper<Subject> result = Wrapper.remove(unknownWrapper, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).contains(inner);
+        assertThat(result.getInnerWrapper()).containsSame(inner);
+        assertThat(inner.getInnerWrapper()).isEmpty();
+        assertThat(inner.getWrapperSubject()).isSameAs(subject);
     }
 
     @Test
@@ -107,11 +112,20 @@ public class WrapperTest {
         final Wrapper<Subject> inner = Wrapper.wrap(subject);
         final Wrapper<Subject> middle = Wrapper.wrap(inner);
         final Wrapper<Subject> outer = Wrapper.wrap(middle);
+        // outer -> middle -> inner -> subject
+        assertThat(outer.getInnerWrapper()).containsSame(middle);
+        assertThat(middle.getInnerWrapper()).containsSame(inner);
+        assertThat(inner.getInnerWrapper()).isEmpty();
+        assertThat(inner.getWrapperSubject()).isSameAs(subject);
         //when
         final Wrapper<Subject> result = Wrapper.remove(middle, outer);
         //then
-        assertThat(result).returns(subject, Wrapper::wrapperSubject);
-        assertThat(result.wrapperInner()).contains(inner);
+        // result -> inner' -> subject
+        assertThat(result.getInnerWrapper()).isNotEmpty();
+        result.getInnerWrapper()
+                .ifPresent(wrapper ->
+                        assertThat(wrapper).isSameAs(inner)
+        );
     }
 
     private class Subject {

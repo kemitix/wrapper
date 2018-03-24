@@ -35,15 +35,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class NestedWrapper<T> implements Wrapper<T> {
 
-    private final Wrapper<T> wrapper;
+    private final Wrapper<T> innerWrapper;
 
     @Override
-    public T wrapperSubject() {
-        return wrapper.wrapperSubject();
+    public T getWrapperSubject() {
+        return innerWrapper.getWrapperSubject();
     }
 
     @Override
-    public Optional<Wrapper<T>> wrapperInner() {
-        return Optional.of(wrapper);
+    public Optional<Wrapper<T>> getInnerWrapper() {
+        return Optional.of(innerWrapper);
     }
 }

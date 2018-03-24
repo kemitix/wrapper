@@ -21,6 +21,7 @@
 
 package net.kemitix.wrapper;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -35,15 +36,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class SubjectWrapper<T> implements Wrapper<T> {
 
-    private final T subject;
+    @Getter
+    private final T wrapperSubject;
 
     @Override
-    public T wrapperSubject() {
-        return subject;
-    }
-
-    @Override
-    public Optional<Wrapper<T>> wrapperInner() {
+    public Optional<Wrapper<T>> getInnerWrapper() {
         return Optional.empty();
     }
 }
