@@ -47,7 +47,7 @@ public interface Wrapper<T> {
      * @return a Wrapper containing the subject
      */
     static <T> Wrapper<T> wrap(@NonNull final T subject) {
-        return new SubjectWrapper<T>(subject);
+        return new SubjectWrapper<>(subject);
     }
 
     /**
@@ -59,7 +59,7 @@ public interface Wrapper<T> {
      * @return a Wrapper containing the wrapper
      */
     static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
-        return new NestedWrapper<T>(wrapper);
+        return new NestedWrapper<>(wrapper);
     }
 
     /**
