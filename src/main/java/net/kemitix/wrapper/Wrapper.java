@@ -65,26 +65,17 @@ public interface Wrapper<T> {
     /**
      * Remove an inner wrapper.
      *
-     * @param remove the wrapper to remove
-     * @param wrapper the outer wrapper
      * @param <T> the type of the subject of the wrapper
      *
+     * @param remove the wrapper to remove
+     * @param wrapper the outer wrapper
      * @return a Wrapper with the remove wrapper removed
      */
-    static <T> Wrapper<T> remove(
+    static <T> Optional<Wrapper<T>> remove(
             @NonNull final Wrapper<T> remove,
             @NonNull final Wrapper<T> wrapper
     ) {
-        return wrapper.getInnerWrapper()
-                .map(inner -> {
-                    if (inner.equals(remove)) {
-                        return inner.getInnerWrapper()
-                                .map(Wrapper::wrap)
-                                .orElseGet(() -> wrap(inner.getWrapperSubject()));
-                    }
-                    return wrap(remove(remove, inner));
-                })
-                .orElse(wrapper);
+        return Optional.empty();
     }
 
     /**
