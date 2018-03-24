@@ -20,3 +20,30 @@
  */
 
 package net.kemitix.wrapper;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
+/**
+ * A Wrapper that contains another Wrapper.
+ *
+ * @param <T> the type of the subject.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
+@RequiredArgsConstructor
+class NestedWrapper<T> implements Wrapper<T> {
+
+    private final Wrapper<T> innerWrapper;
+
+    @Override
+    public T getWrapperSubject() {
+        return innerWrapper.getWrapperSubject();
+    }
+
+    @Override
+    public Optional<Wrapper<T>> getInnerWrapper() {
+        return Optional.of(innerWrapper);
+    }
+}

@@ -20,3 +20,27 @@
  */
 
 package net.kemitix.wrapper;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
+/**
+ * A Wrapper that contains the subject directly.
+ *
+ * @param <T> the type of the subject.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
+@RequiredArgsConstructor
+class SubjectWrapper<T> implements Wrapper<T> {
+
+    @Getter
+    private final T wrapperSubject;
+
+    @Override
+    public Optional<Wrapper<T>> getInnerWrapper() {
+        return Optional.empty();
+    }
+}
