@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Paul Campbell
+ * Copyright (c) 2018 Paul Campbell
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -39,76 +39,65 @@ import java.util.Optional;
 public interface Wrapper<T> {
 
     /**
-     * Gets the Wrapper's state object.
+     * Wrap the subject.
      *
-     * @return the WrapperState
-     */
-    WrapperState<T> getWrapperState();
-
-    /**
-     * Fetch the core item being Wrapper.
+     * @param subject the subject to wrap
+     * @param <T> the type of the subject
      *
-     * @return the core item
+     * @return a Wrapper containing the subject
      */
-    default T getWrapperCore() {
-        return getWrapperState().getWrapperCore();
+    static <T> Wrapper<T> wrap(@NonNull final T subject) {
+        return new SubjectWrapper<T>(subject);
     }
 
     /**
-     * Gets the inner wrapper if one is present.
+     * Wrap a wrapper.
      *
-     * @return An Optional containing the inner wrapper if present, otherwise is empty
+     * @param wrapper the wrapper to wrap
+     * @param <T> the type of the subject of the wrapper
+     *
+     * @return a Wrapper containing the wrapper
      */
-    default Optional<Wrapper<T>> findInnerWrapper() {
-        return getWrapperState().findInnerWrapper();
+    static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
+        return new NestedWrapper<T>(wrapper);
     }
 
     /**
-     * Remove the wrapper from the chain of wrappers.
+     * Remove an inner wrapper.
      *
-     * @param wrapper the wrapper to remove
+     * @param remove the wrapper to remove
+     * @param wrapper the outer wrapper
+     * @param <T> the type of the subject of the wrapper
      *
-     * @return {@code this} Wrapper if {@code wrapper} is not {@code this}, otherwise the Wrapper Delegate, which may be
-     * the Wrapper Core
+     * @return a Wrapper with the remove wrapper removed
      */
-    @SuppressWarnings("unchecked")
-    default T removeWrapper(@NonNull Wrapper<T> wrapper) {
-        if (wrapper == this) {
-            return getWrapperDelegate();
-        }
-        return Optional.ofNullable(getWrapperState().removeWrapper(wrapper))
-                       .orElse((T) this);
+    static <T> Wrapper<T> remove(
+            @NonNull final Wrapper<T> remove,
+            @NonNull final Wrapper<T> wrapper
+    ) {
+        return wrapper.wrapperInner()
+                .map(inner -> {
+                    if (inner.equals(remove)) {
+                        return inner.wrapperInner()
+                                .map(Wrapper::wrap)
+                                .orElseGet(() -> Wrapper.wrap(inner.wrapperSubject()));
+                    }
+                    return Wrapper.wrap(Wrapper.remove(remove, inner));
+                })
+                .orElse(wrapper);
     }
 
     /**
-     * Provides the core item's own interface.
+     * The subject within the innermost wrapper.
      *
-     * @return the core item as a T object
+     * @return the subject
      */
-    @SuppressWarnings("unchecked")
-    default T asCore() {
-        return (T) this;
-    }
-
-    default T getWrapperDelegate() {
-        return getWrapperState().findInnerWrapper()
-                                .map(Wrapper::asCore)
-                                .orElseGet(this::getWrapperCore);
-    }
+    T wrapperSubject();
 
     /**
-     * Checks if the item is a Wrapper, and returns it as one, inside an Optional, if it is, otherwise it returns empty.
+     * The wrapper immediately within the current wrapper.
      *
-     * @param item The item to check
-     * @param <T>  The type of the item
-     *
-     * @return an Optional containing either the item as a Wrapper, or empty is item isn't a Wrapper
+     * @return an Optional containing the nested wrapper, or empty if this wrapper has no inner wrapper.
      */
-    @SuppressWarnings("unchecked")
-    static <T> Optional<Wrapper<T>> asWrapper(@NonNull T item) {
-        if (item instanceof Wrapper) {
-            return Optional.of((Wrapper<T>) item);
-        }
-        return Optional.empty();
-    }
+    Optional<Wrapper<T>> wrapperInner();
 }

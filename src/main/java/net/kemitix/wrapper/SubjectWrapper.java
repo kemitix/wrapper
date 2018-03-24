@@ -20,3 +20,37 @@
  */
 
 package net.kemitix.wrapper;
+
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * A Wrapper that contains the subject directly.
+ *
+ * @param <T> the type of the subject.
+ *
+ * @author Paul Campbell (pcampbell@kemitix.net)
+ */
+class SubjectWrapper<T>
+        extends AtomicReference<T>
+        implements Wrapper<T> {
+
+    /**
+     * Constructor.
+     *
+     * @param subject the subject to wrap
+     */
+    SubjectWrapper(final T subject) {
+        super(subject);
+    }
+
+    @Override
+    public T wrapperSubject() {
+        return get();
+    }
+
+    @Override
+    public Optional<Wrapper<T>> wrapperInner() {
+        return Optional.empty();
+    }
+}
