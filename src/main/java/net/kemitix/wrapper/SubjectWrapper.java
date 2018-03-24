@@ -21,8 +21,9 @@
 
 package net.kemitix.wrapper;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A Wrapper that contains the subject directly.
@@ -31,22 +32,14 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-class SubjectWrapper<T>
-        extends AtomicReference<T>
-        implements Wrapper<T> {
+@RequiredArgsConstructor
+class SubjectWrapper<T> implements Wrapper<T> {
 
-    /**
-     * Constructor.
-     *
-     * @param subject the subject to wrap
-     */
-    SubjectWrapper(final T subject) {
-        super(subject);
-    }
+    private final T subject;
 
     @Override
     public T wrapperSubject() {
-        return get();
+        return subject;
     }
 
     @Override
