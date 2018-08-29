@@ -16,7 +16,7 @@ public class WrapperTest implements WithAssertions {
     public void wrapperRequiresSubject() {
         assertThatNullPointerException()
                 .isThrownBy(() -> Wrapper.wrap((Subject) null))
-                .withMessage("subject");
+                .withMessageStartingWith("subject is marked");
     }
 
     @Test
@@ -24,7 +24,7 @@ public class WrapperTest implements WithAssertions {
     public void wrapRequiresInner() {
         assertThatNullPointerException()
                 .isThrownBy(() -> Wrapper.wrap((Wrapper) null))
-                .withMessage("wrapper");
+                .withMessageStartingWith("wrapper is marked");
     }
 
     @Test
