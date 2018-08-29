@@ -20,10 +20,10 @@ public class WrapperTest implements WithAssertions {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void wrapRequiresInner() {
+        final Wrapper<String> wrapper = null;
         assertThatNullPointerException()
-                .isThrownBy(() -> Wrapper.wrap((Wrapper) null))
+                .isThrownBy(() -> Wrapper.wrap(wrapper))
                 .withMessageStartingWith("wrapper is marked");
     }
 
