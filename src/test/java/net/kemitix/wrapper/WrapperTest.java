@@ -1,32 +1,30 @@
 package net.kemitix.wrapper;
 
+import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link Wrapper}.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class WrapperTest {
+public class WrapperTest implements WithAssertions {
 
     @Test
     public void wrapperRequiresSubject() {
         assertThatNullPointerException()
                 .isThrownBy(() -> Wrapper.wrap((Subject) null))
-                .withMessage("subject");
+                .withMessageStartingWith("subject is marked");
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void wrapRequiresInner() {
+        final Wrapper<String> wrapper = null;
         assertThatNullPointerException()
-                .isThrownBy(() -> Wrapper.wrap((Wrapper) null))
-                .withMessage("wrapper");
+                .isThrownBy(() -> Wrapper.wrap(wrapper))
+                .withMessageStartingWith("wrapper is marked");
     }
 
     @Test
