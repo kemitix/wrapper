@@ -1,18 +1,16 @@
 package net.kemitix.wrapper;
 
+import org.assertj.core.api.WithAssertions;
 import org.junit.Test;
 
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Tests for {@link Wrapper}.
  *
  * @author Paul Campbell (pcampbell@kemitix.net)
  */
-public class WrapperTest {
+public class WrapperTest implements WithAssertions {
 
     @Test
     public void wrapperRequiresSubject() {
