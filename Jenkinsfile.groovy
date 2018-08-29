@@ -1,80 +1,104 @@
-final String mvn = "mvn --batch-mode --update-snapshots"
+final String publicRepo = 'https://github.com/kemitix/'
+final String mvn = "mvn --batch-mode --update-snapshots --errors"
+final dependenciesSupportJDK = 10
 
 pipeline {
     agent any
     stages {
-        stage('Environment') {
+        stage('Build & Test') {
             steps {
-                sh 'set'
-            }
-        }
-        stage('no SNAPSHOT in master') {
-            // checks that the pom version is not a snapshot when the current or target branch is master
-            when {
-                expression {
-                    (env.GIT_BRANCH == 'master' || env.CHANGE_TARGET == 'master') &&
-                            (readMavenPom(file: 'pom.xml').version).contains("SNAPSHOT")
-                }
-            }
-            steps {
-                error("Build failed because SNAPSHOT version")
-            }
-        }
-        stage('Static Code Analysis') {
-            when { expression { findFiles(glob: '**/src/main/java/**/*.java').length > 0 } }
-            steps {
-                withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                    sh "${mvn} compile"
-                    sh "${mvn} checkstyle:checkstyle"
-                    sh "${mvn} pmd:pmd"
+                withMaven(maven: 'maven', jdk: 'JDK 1.8') {
+                    sh "${mvn} clean compile checkstyle:checkstyle pmd:pmd test"
+                    // PMD to Jenkins
                     pmd canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
                 }
             }
         }
-        stage('SonarQube (develop only)') {
-            when { expression { env.GIT_BRANCH == 'develop' && env.GIT_URL.startsWith('https://') } }
+        stage('Report Coverage') {
+            steps {
+                withMaven(maven: 'maven', jdk: 'JDK 1.8') {
+                    // Code Coverage to Jenkins
+                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
+                }
+            }
+        }
+        stage('Report Checkstyle') {
+            steps {
+                withMaven(maven: 'maven', jdk: 'JDK 1.8') {
+                    // Checkstyle to Jenkins
+                    step([$class: 'hudson.plugins.checkstyle.CheckStylePublisher',
+                          pattern: '**/target/checkstyle-result.xml',
+                          healthy:'20',
+                          unHealthy:'100'])
+                }
+            }
+        }
+        stage('Verify & Install') {
+            steps {
+                withMaven(maven: 'maven', jdk: 'JDK 1.8') {
+                    sh "${mvn} -DskipTests install"
+                }
+            }
+        }
+        stage('SonarQube (published)') {
+            when { expression { isPublished(publicRepo) } }
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    withMaven(maven: 'maven', jdk: 'JDK LTS') {
+                    withMaven(maven: 'maven', jdk: 'JDK 1.8') {
                         sh "${mvn} org.sonarsource.scanner.maven:sonar-maven-plugin:3.4.0.905:sonar"
                     }
                 }
             }
         }
-        stage('Build Java LTS') {
+        stage('Deploy (published release branch)') {
+            when {
+                expression {
+                    (isReleaseBranch() &&
+                            isPublished(publicRepo) &&
+                            notSnapshot())
+                }
+            }
             steps {
-                withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                    sh "${mvn} clean install"
-                    junit '**/target/surefire-reports/*.xml'
-                    jacoco exclusionPattern: '**/*{Test|IT|Main|Application|Immutable}.class'
-                    sh "${mvn} com.gavinmogan:codacy-maven-plugin:coverage " +
-                            "-DcoverageReportFile=target/site/jacoco/jacoco.xml " +
-                            "-DprojectToken=`$JENKINS_HOME/codacy/token` " +
-                            "-DapiToken=`$JENKINS_HOME/codacy/apitoken` " +
-                            "-Dcommit=`git rev-parse HEAD`"
+                withMaven(maven: 'maven', jdk: 'JDK 1.8') {
+                    sh "${mvn} --activate-profiles release deploy"
                 }
             }
         }
-        stage('Archiving') {
-            when { expression { findFiles(glob: '**/target/*.jar').length > 0 } }
+        stage('Build Java 9') {
+            when { expression { dependenciesSupportJDK >= 9 } }
             steps {
-                archiveArtifacts '**/target/*.jar'
-            }
-        }
-        stage('Deploy') {
-            when { expression { (env.GIT_BRANCH == 'master' && env.GIT_URL.startsWith('https://')) } }
-            steps {
-                withMaven(maven: 'maven', jdk: 'JDK LTS') {
-                    sh "${mvn} deploy --activate-profiles release -DskipTests=true"
-                }
-            }
-        }
-        stage('Build Java Next') {
-            steps {
-                withMaven(maven: 'maven', jdk: 'JDK Next') {
+                withMaven(maven: 'maven', jdk: 'JDK 9') {
                     sh "${mvn} clean verify -Djava.version=9"
                 }
             }
         }
+        stage('Build Java 10') {
+            when { expression { dependenciesSupportJDK >= 10 } }
+            steps {
+                withMaven(maven: 'maven', jdk: 'JDK 10') {
+                    sh "${mvn} clean verify -Djava.version=10"
+                }
+            }
+        }
     }
+}
+
+private boolean isReleaseBranch() {
+    return branchStartsWith('release/')
+}
+
+private boolean branchStartsWith(final String branchName) {
+    startsWith(env.GIT_BRANCH, branchName)
+}
+
+private boolean isPublished(final String repo) {
+    startsWith(env.GIT_URL, repo)
+}
+
+private static boolean startsWith(final String value, final String match) {
+    value != null && value.startsWith(match)
+}
+
+private boolean notSnapshot() {
+    return !(readMavenPom(file: 'pom.xml').version).contains("SNAPSHOT")
 }
