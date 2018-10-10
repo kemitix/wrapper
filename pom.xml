@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>wrapper</artifactId>
-    <version>0.4.0</version>
+    <version>DEV-SNAPSHOT</version>
     <name>Wrapper</name>
     <description>Wrapper for Generic types.</description>
 
@@ -23,7 +23,7 @@
         <assertj.version>3.11.1</assertj.version>
         <mockito.version>2.23.0</mockito.version>
         <tiles-maven-plugin.version>2.12</tiles-maven-plugin.version>
-        <kemitix-tiles.version>0.8.1</kemitix-tiles.version>
+        <kemitix-maven-tiles.version>1.3.1</kemitix-maven-tiles.version>
         <kemitix-checkstyle.version>4.0.1</kemitix-checkstyle.version>
     </properties>
 
@@ -63,7 +63,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <tiles>
-                        <tile>net.kemitix.tiles:all:${kemitix-tiles.version}</tile>
+                        <tile>net.kemitix.tiles:all:${kemitix-maven-tiles.version}</tile>
                         <!--<tile>net.kemitix.tiles:pmd-strict:${kemitix-tiles.version}</tile>-->
                         <tile>net.kemitix.checkstyle:tile:${kemitix-checkstyle.version}</tile>
                     </tiles>
