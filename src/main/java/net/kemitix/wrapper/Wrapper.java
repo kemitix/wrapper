@@ -46,7 +46,7 @@ public interface Wrapper<T> {
      *
      * @return a Wrapper containing the subject
      */
-    static <T> Wrapper<T> wrap(@NonNull final T subject) {
+    public static <T> Wrapper<T> wrap(@NonNull final T subject) {
         return new SubjectWrapper<>(subject);
     }
 
@@ -58,7 +58,7 @@ public interface Wrapper<T> {
      *
      * @return a Wrapper containing the wrapper
      */
-    static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
+    public static <T> Wrapper<T> wrap(@NonNull final Wrapper<T> wrapper) {
         return new NestedWrapper<>(wrapper);
     }
 
@@ -67,12 +67,12 @@ public interface Wrapper<T> {
      *
      * @return the subject
      */
-    T getWrapperSubject();
+    public abstract T getWrapperSubject();
 
     /**
      * The wrapper immediately within the current wrapper.
      *
      * @return an Optional containing the nested wrapper, or empty if this wrapper has no inner wrapper.
      */
-    Optional<Wrapper<T>> getInnerWrapper();
+    public abstract Optional<Wrapper<T>> getInnerWrapper();
 }
