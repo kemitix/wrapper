@@ -19,7 +19,7 @@
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.10</lombok.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13</junit.version>
         <assertj.version>3.16.1</assertj.version>
         <mockito.version>3.3.3</mockito.version>
         <tiles-maven-plugin.version>2.17</tiles-maven-plugin.version>
